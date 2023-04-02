@@ -1,0 +1,61 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    title Web MIDI App
+    link(rel='stylesheet' href='styles/styles.css')
+    script(src='https://cdn.jsdelivr.net/npm/webmidi@latest/dist/iife/webmidi.iife.js')
+  body
+    header
+      h1 Web MIDI App
+      h2 Input Devices
+      select#input-select
+        option(value='-1') Select an input device...
+      h2 Output Devices
+      select#output-select
+        option(value='-1') Select an output device...
+    main
+      .tabs
+        button.tab.active(data-target='#tab1') Tab 1
+        button.tab(data-target='#tab2') Tab 2
+        button.tab(data-target='#tab3') Tab 3
+        button.tab(data-target='#tab4') Tab 4
+      .tab-content
+        #tab1.tab-pane.active
+          h2 Tab 1 Controls
+          .controls
+            .control-group
+              label Knob 1
+              input.knob(type='range' min='0' max='127' value='0')
+              output 0
+            .control-group
+              label Knob 2
+              input.knob(type='range' min='0' max='127' value='0')
+              output 0
+            .control-group
+              label Slider 1
+              input(type='range' min='0' max='127' value='0')
+              output 0
+            .control-group
+              label Slider 2
+              input(type='range' min='0' max='127' value='0')
+              output 0
+            .control-group
+              label Text Display 1
+              .text-display
+            .control-group
+              label Text Display 2
+              .text-display
+        #tab2.tab-pane
+          h2 Tab 2 Controls
+          .controls
+            //  Similar markup as tab 1 
+        #tab3.tab-pane
+          h2 Tab 3 Controls
+          .controls
+            //  Similar markup as tab 1 
+        #tab4.tab-pane
+          h2 Tab 4 Controls
+          .controls
+            //  Similar markup as tab 1 
+    script(src='js/app.js')
