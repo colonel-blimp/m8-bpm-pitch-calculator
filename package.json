@@ -9,11 +9,9 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "css-scss": "^0.1.1",
     "gulp": "^4.0.2",
     "gulp-autoprefixer": "^8.0.0",
     "gulp-clean-css": "^4.3.0",
-    "gulp-css-scss": "^0.1.0",
     "gulp-pug": "^5.0.0",
     "gulp-rename": "^2.0.0",
     "gulp-sass": "^5.1.0",
@@ -22,6 +20,7 @@
     "pug": "^3.0.2",
     "webpack": "^5.77.0",
     "webpack-cli": "^5.0.1",
-    "webpack-dev-server": "^4.13.2"
+    "webpack-dev-server": "^4.13.2",
+    "yargs": "^17.7.1"
   }
 }
