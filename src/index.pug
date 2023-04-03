@@ -1,3 +1,18 @@
+
+mixin ui_control(label, k='')
+  .control-group
+    label= label
+    input(class=`${k}` type='range' min='0' max='127' value='0')
+    output 0
+
+mixin knob(number)
+  +ui_control(`Knob ${number}`, 'knob')
+
+mixin slider(number)
+  +ui_control(`Slider ${number}`, 'slider')
+
+
+
 doctype html
 html(lang='en')
   head
@@ -24,28 +39,10 @@ html(lang='en')
         #tab1.tab-pane.active
           h2 Tab 1 Controls
           .controls
-            .control-group
-              label Knob 1
-              input.knob(type='range' min='0' max='127' value='0')
-              output 0
-            .control-group
-              label Knob 2
-              input.knob(type='range' min='0' max='127' value='0')
-              output 0
-            .control-group
-              label Slider 1
-              input(type='range' min='0' max='127' value='0')
-              output 0
-            .control-group
-              label Slider 2
-              input(type='range' min='0' max='127' value='0')
-              output 0
-            .control-group
-              label Text Display 1
-              .text-display
-            .control-group
-              label Text Display 2
-              .text-display
+            +knob(1,'.knob')
+            +knob(2,'.knob')
+            +slider(1,'.slider')
+            +slider(2,'.slider')
         #tab2.tab-pane
           h2 Tab 2 Controls
           .controls

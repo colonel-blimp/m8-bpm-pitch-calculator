@@ -1,7 +1,11 @@
 // Create an object to hold the current state of the application
 const state = {
-  selectedInput: null,
+  selecteddevice: null,
   selectedOutput: null,
+  devices: {
+    input: [],
+    output: []
+  },
   controls: [
     {
       type: "knob",
@@ -48,6 +52,44 @@ const state = {
   ]
 };
 
+
+
+function setActiveTab(tab) {
+  const activeTab = document.querySelector(".active");
+  if (activeTab) {
+    activeTab.classList.remove("active");
+  }
+  tab.classList.add("active");
+}
+
+
+function updateUI() {
+  // Get the active tab
+  const activeTab = document.querySelector(".tab.active");
+
+  // Get the controls associated with the active tab
+  const controls = state.controls.filter(control => control.tab === activeTab.id);
+
+  // Update the values of the controls
+  controls.forEach(control => {
+    // Find the UI element for the control
+    const controlElement = document.querySelector(`[data-control-id="${control.id}"]`);
+
+    // Update the UI element based on the control value
+    if (controlElement.classList.contains("knob")) {
+      controlElement.style.setProperty("--knob-angle", `${(control.value / 127) * 270 - 135}deg`);
+    } else if (controlElement.classList.contains("slider")) {
+      controlElement.value = control.value;
+    } else if (controlElement.classList.contains("display")) {
+      controlElement.textContent = control.value;
+    }
+  });
+}
+
+
+
+
+
 function initMIDI() {
   if (WebMidi.enabled) {
     console.log("WebMidi already enabled!")
@@ -91,6 +133,62 @@ function initMIDI() {
 }
 
 
+// Function to handle successful WebMIDI initialization
+function onMIDISuccess() {
+  // Set up MIDI input and output lists
+  const inputListControl= document.getElementById("input-select");
+  const outputListControl= document.getElementById("output-select");
+
+  // Add event listeners for MIDI inputs and outputs
+  WebMidi.inputs.forEach(input => {
+    input.onmidimessage = state.handleMidiMessage;
+    state.inputs.push(input.value);
+    setUpDeviceSelectControl(inputListControl, input, 'input');
+  });
+
+  WebMidi.outputs.forEach(output => {
+    state.outputs.push(output.value);
+    setUpDeviceSelectControl(outputListControl, output, 'output');
+  });
+
+  // Update the UI
+  updateUI();
+}
+
+
+// Function to add a MIDI device to a list
+function setUpDeviceSelectControl(selectControl, devices, label=false){
+  devices.forEach(device => {
+    const option = document.createElement('option');
+    option.text = device.name;
+    option.value = device.id;
+    option.setAttribute('data-device-id', device.id);
+    selectControl.add(option);
+
+    selectControl.addEventListener("change", () => {
+      const device = state.devices[label][this.selectedIndex - 1];
+      console.log(`== selected MIDI ${label}: ${device.name}`);
+      state.selectedInput = device;
+
+      // Listen for MIDI messages from the selected device device
+      state.selectedInput.onmidimessage = (msg) => {
+        state.handleMidiMessage(msg.data);
+      }
+    });
+
+  });
+}
+
+
+
+
+// Function to handle failed WebMIDI initialization
+function onMIDIFailure() {
+  console.error("Failed to initialize WebMIDI");
+  alert("Failed to initialize WebMIDI");
+}
+
+
 // Function to initialize the application
 function init() {
   // Initialize WebMIDI
@@ -131,74 +229,6 @@ function init() {
     });
   });
 }
-
-// Function to handle successful WebMIDI initialization
-function onMIDISuccess() {
-  // Set up MIDI input and output lists
-  const inputList = document.getElementById("input-select");
-  const outputList = document.getElementById("output-select");
-
-  // Add event listeners for MIDI inputs and outputs
-  WebMidi.inputs.forEach(input => {
-    input.onmidimessage = state.handleMidiMessage;
-    addDeviceToList(inputList, input);
-  });
-  WebMidi.outputs.forEach(output => {
-    addDeviceToList(outputList, output);
-  });
-
-  // Update the UI
-  updateUI();
-}
-
-// Function to handle failed WebMIDI initialization
-function onMIDIFailure() {
-  console.error("Failed to initialize WebMIDI");
-}
-
-//// Function to add a MIDI device to a list
-function addDeviceToList(select, device) {
-  const option = document.createElement('option');
-  option.text = device.name;
-  option.value = device.id;
-  option.setAttribute('data-device-id', device.id);
-  select.add(option);
-}
-
-
-
-function setActiveTab(tab) {
-  const activeTab = document.querySelector(".active");
-  if (activeTab) {
-    activeTab.classList.remove("active");
-  }
-  tab.classList.add("active");
-}
-
-
-function updateUI() {
-  // Get the active tab
-  const activeTab = document.querySelector(".tab.active");
-
-  // Get the controls associated with the active tab
-  const controls = state.controls.filter(control => control.tab === activeTab.id);
-
-  // Update the values of the controls
-  controls.forEach(control => {
-    // Find the UI element for the control
-    const controlElement = document.querySelector(`[data-control-id="${control.id}"]`);
-
-    // Update the UI element based on the control value
-    if (controlElement.classList.contains("knob")) {
-      controlElement.style.setProperty("--knob-angle", `${(control.value / 127) * 270 - 135}deg`);
-    } else if (controlElement.classList.contains("slider")) {
-      controlElement.value = control.value;
-    } else if (controlElement.classList.contains("display")) {
-      controlElement.textContent = control.value;
-    }
-  });
-}
-
 
 
 document.addEventListener("DOMContentLoaded", init);

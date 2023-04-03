@@ -5,7 +5,7 @@ const autoprefixer = require('gulp-autoprefixer');
 const cleanCss = require('gulp-clean-css');
 const rename = require('gulp-rename');
 const uglify = require('gulp-uglify');
-const argv = require('yargs')
+const argv = require('yargs').argv
 const spawn = require('child_process').spawn;
 
 gulp.task('pug', function() {
