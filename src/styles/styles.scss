@@ -110,9 +110,7 @@ h1 {
     border-radius: 50%;
     border: 1px solid #ccc;
     transition: background-color 0.2s ease;
-    &:hover {
-      background-color: #09f;
-    }
+   
   }
   &::-moz-range-thumb {
     width: 20px;
@@ -136,4 +134,3 @@ h1 {
     height: 8px;
   }
 }
-

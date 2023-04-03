@@ -7,11 +7,16 @@ const rename = require('gulp-rename');
 const uglify = require('gulp-uglify');
 const argv = require('yargs').argv
 const spawn = require('child_process').spawn;
+const browserSync = require('browser-sync').create();
+
 
 gulp.task('pug', function() {
   return gulp.src('src/**/*.pug')
     .pipe(pug({pretty: true}))
-    .pipe(gulp.dest('dist'));
+    .pipe(gulp.dest('dist'))
+    .pipe(browserSync.reload({
+      stream: true
+    }))
 });
 
 gulp.task('scss', function() {
@@ -20,14 +25,20 @@ gulp.task('scss', function() {
     .pipe(autoprefixer())
     //.pipe(cleanCss())
     //.pipe(rename({suffix: '.min'}))
-    .pipe(gulp.dest('dist'));
+    .pipe(gulp.dest('dist'))
+    .pipe(browserSync.reload({
+      stream: true
+    }))
 });
 
 gulp.task('js', function() {
   return gulp.src('src/**/*.js')
     //.pipe(uglify())
     //.pipe(rename({suffix: '.min'}))
-    .pipe(gulp.dest('dist'));
+    .pipe(gulp.dest('dist'))
+    .pipe(browserSync.reload({
+      stream: true
+    }))
 });
 
 gulp.task('watch', function() {
@@ -55,4 +66,13 @@ gulp.task('moveFavicon', function() {
     .pipe(gulp.dest('dist/'));
 });
 
-gulp.task('default', gulp.parallel('pug', 'scss', 'js', 'watch'));
+gulp.task('default', function() {
+
+  browserSync.init({
+    server: {
+       baseDir: './dist'
+    },
+ })
+  gulp.parallel('pug', 'scss', 'js', 'watch') 
+});
+
