@@ -58,6 +58,7 @@ gulp.task('default', function() {
   gulp.watch('src/**/*.pug', gulp.series('pug'));
   gulp.watch('src/**/*.scss', gulp.series('scss'));
   gulp.watch('src/**/*.js', gulp.series('js'));
+  gulp.watch('src/assets/favicon.ico', gulp.series('moveFavicon'));
   let process;
 
   const restart = () => {
