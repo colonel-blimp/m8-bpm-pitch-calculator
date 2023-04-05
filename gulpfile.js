@@ -51,8 +51,7 @@ gulp.task('watch', function() {
     if (process) {
       process.kill();
     }
-    console.log(`argv: ${argv}`)
-    process = spawn('gulp', [argv.task], {stdio: 'inherit'});
+    process = spawn('gulp', ['watch'], {stdio: 'inherit'});
   };
 
   // Watch the gulpfile and restart the process if it changes
@@ -72,7 +71,7 @@ gulp.task('default', function() {
     server: {
        baseDir: './dist'
     },
- })
-  gulp.parallel('pug', 'scss', 'js', 'watch') 
+  })
+  gulp.parallel('pug', 'scss', 'js', 'watch')
 });
 
