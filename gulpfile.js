@@ -9,14 +9,15 @@ const argv = require('yargs').argv
 const spawn = require('child_process').spawn;
 const browserSync = require('browser-sync').create();
 
+const reload      = browserSync.reload;
 
 gulp.task('pug', function() {
   return gulp.src('src/**/*.pug')
     .pipe(pug({pretty: true}))
     .pipe(gulp.dest('dist'))
-    .pipe(browserSync.reload({
-      stream: true
-    }))
+    //.pipe(browserSync.reload({
+    //  stream: true
+    //}))
 });
 
 gulp.task('scss', function() {
@@ -41,25 +42,6 @@ gulp.task('js', function() {
     }))
 });
 
-gulp.task('watch', function() {
-  gulp.watch('src/**/*.pug', gulp.series('pug'));
-  gulp.watch('src/**/*.scss', gulp.series('scss'));
-  gulp.watch('src/**/*.js', gulp.series('js'));
-  let process;
-
-  const restart = () => {
-    if (process) {
-      process.kill();
-    }
-    process = spawn('gulp', ['watch'], {stdio: 'inherit'});
-  };
-
-  // Watch the gulpfile and restart the process if it changes
-  gulp.watch('gulpfile.js', () => {
-    restart();
-  });
-});
-
 gulp.task('moveFavicon', function() {
   return gulp.src('src/assets/favicon.ico')
     .pipe(gulp.dest('dist/'));
@@ -71,7 +53,23 @@ gulp.task('default', function() {
     server: {
        baseDir: './dist'
     },
-  })
-  gulp.parallel('pug', 'scss', 'js', 'watch')
+  });
+
+  gulp.watch('src/**/*.pug', gulp.series('pug'));
+  gulp.watch('src/**/*.scss', gulp.series('scss'));
+  gulp.watch('src/**/*.js', gulp.series('js'));
+  let process;
+
+  const restart = () => {
+    if (process) {
+      process.kill();
+    }
+    process = spawn('gulp', [], {stdio: 'inherit'});
+  };
+
+  // Watch the gulpfile and restart the process if it changes
+  gulp.watch('gulpfile.js', () => {
+    restart();
+  });
 });
 
