@@ -1,58 +1,27 @@
-
-mixin ui_control(label, k='')
-  .control-group
-    label= label
-    input(class=`${k}` type='range' min='0' max='127' value='0')
-    output 0
-
-mixin knob(number)
-  +ui_control(`Knob ${number}`, 'knob')
-
-mixin slider(number)
-  +ui_control(`Slider ${number}`, 'slider')
-
-
-
 doctype html
-html(lang='en')
+html
   head
+    meta(name='viewport' content='width=device-width,initial-scale=1')
     meta(charset='UTF-8')
-    title Web MIDI App
+    title My PWA
     link(rel='stylesheet' href='styles/styles.css')
-    //- script(src='https://cdn.jsdelivr.net/npm/webmidi@latest/dist/iife/webmidi.iife.js')
+      
+
   body
-    header
-      h1 Web MIDI App
-      h2 Input Devices
-      select#input-select
-        option(value='-1') Select an input device...
-      h2 Output Devices
-      select#output-select
-        option(value='-1') Select an output device...
-    main
-      .tabs
-        button.tab.active(data-target='#tab1') Tab 1
-        button.tab(data-target='#tab2') Tab 2
-        button.tab(data-target='#tab3') Tab 3
-        button.tab(data-target='#tab4') Tab 4
-      .tab-content
-        #tab1.tab-pane.active
-          h2 Tab 1 Controls
-          .controls
-            +knob(1,'.knob')
-            +knob(2,'.knob')
-            +slider(1,'.slider')
-            +slider(2,'.slider')
-        #tab2.tab-pane
-          h2 Tab 2 Controls
-          .controls
-            //  Similar markup as tab 1 
-        #tab3.tab-pane
-          h2 Tab 3 Controls
-          .controls
-            //  Similar markup as tab 1 
-        #tab4.tab-pane
-          h2 Tab 4 Controls
-          .controls
-            //  Similar markup as tab 1 
+    .container
+      .number-box
+        label(for='from-bpm') From BPM
+        input(type='number' id='from-bpm' inputmode='numeric' placeholder='120')
+      .number-box
+        label(for='to-bpm') To BPM
+        input(type='number' id='to-bpm' inputmode='numeric' placeholder='140')
+      .box
+        .number-box
+          label(for='display-box') Semitones
+          input(id='display-box' readonly=true)
+        .number-box
+          label(for='display-box-hex') Semitones (Hex)
+          input(id='display-box-hex' readonly=true)
+      
     script(src='js/app.js')
+

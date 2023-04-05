@@ -1,117 +1,92 @@
-// Create an object to hold the state of the application
-state = {
-  midiDevices: {
-    input: [],
-    output: [],
-    selected: {
-      input: null,
-      output: null
+
+
+// Create a function to initialize the application
+function initApp() {
+  // Select the input elements
+  const fromBpmInput = document.querySelector('#from-bpm');
+  const toBpmInput = document.querySelector('#to-bpm');
+  const displayBox = document.querySelector('#display-box');
+  const displayBoxHex = document.querySelector('#display-box-hex');
+
+
+
+  const to_base16_80center = pitch_change => 128 + (Number(pitch_change) * 16)
+  const dec2hex = d => Math.round(d).toString(16).padStart(2, '0').toUpperCase()
+  const hex2dec = d => Number(d).parseInt(16)
+
+  function bpm_to_pitch(old_bpm, new_bpm) {
+    return(Math.log2(new_bpm/old_bpm)*12)
+  }
+
+  // Define the function to calculate semitone difference
+  function convertBpmDiffToSemitones(fromBpm, toBpm) {
+    const semitones = 12 * Math.log2(toBpm / fromBpm);
+    return semitones.toFixed(2);
+  }
+
+
+  function warningMessageIfOutOfRange(semitoneChange) {
+    if(semitoneChange > 8 || semitoneChange < -8){
+      return `** WARNING ** Pitch change too big to express as M8 DETUNE value: ${+Number(semitoneChange).toFixed(2)}\n`
+    } else {
+      return dec2hex(to_base16_80center(semitoneChange))
     }
-  },
-  handleMidiMessage: onMIDIMessage
+  }
+
+  function onBpmInputChange() {
+    const semitoneChange = convertBpmDiffToSemitones(parseFloat(fromBpmInput.value), parseFloat(toBpmInput.value));
+    displayBox.value =  semitoneChange;
+
+    const hex_pitch_change = dec2hex(semitoneChange*16);
+    displayBoxHex.value = hex_pitch_change;
+
+    let debug_str = '';
+
+    return debug_str;
+
+  }
+
+  // Add event listeners to the input elements
+  fromBpmInput.addEventListener('input', onBpmInputChange);
+  toBpmInput.addEventListener('input', onBpmInputChange);
+
+  makeInputDraggable(fromBpmInput);
+  makeInputDraggable(toBpmInput);
+  
+  function makeInputDraggable(input){
+    input.addEventListener('touchstart', function(event) {
+      // Disable scrolling behavior
+      //event.preventDefault();
+    
+      // Store the starting y-coordinate of the touch
+      this.touchStartY = event.touches[0].clientY;
+    
+      // Store the current value of the input
+      this.startValue = parseFloat(this.value) || 0;
+    });
+    
+    input.addEventListener('touchmove', function(event) {
+      // Disable scrolling behavior
+      event.preventDefault();
+    
+      // Calculate the distance moved by the touch
+      let deltaY = this.touchStartY - event.touches[0].clientY;
+    
+      // Calculate the new value of the input based on the distance moved
+      let newValue = this.startValue + (deltaY / 10);
+    
+      // Set the new value of the input
+      this.value = newValue.toFixed(2);
+    });
+  
+    input.addEventListener('touchend', onBpmInputChange);
+  }
+  
+
 };
 
 
 
-// Populate & add listener to the MIDI device select control
-function populateDeviceSelectControl(selectControlId, deviceType){
-  // Get references to the HTML <select> element for MIDI device
-  selectControl = document.getElementById(selectControlId);
-  midiDevices = state.midiDevices[deviceType];
-
-  // Loop through the input devices and add options to the input <select> element
-  for (var device of midiDevices) {
-    var option = document.createElement('option');
-    option.value = device.id;
-    option.text = device.name;
-    selectControl.appendChild(option);
-  }
-
-  addDeviceSelectControlListener(selectControlId, deviceType);
-}
-
-function addDeviceSelectControlListener(selectControlId, deviceType){
-  // Listen for changes to the select control
-  selectControl.addEventListener('change', (event) => {
-    const midiDevice = state.midiDevices[deviceType][event.target.selectedIndex - 1];
-    
-    //TODO: remove listener from previous MIDI device
-    state.midiDevices.selected[deviceType] = midiDevice;
-    console.log(`=== User selected MIDI ${deviceType} device: '${midiDevice.name}'`);
-
-    // Listen for MIDI messages from the selected MIDI device (inpute only)
-    if ( deviceType == 'input') {
-      removeAllMidiInputListeners();
-      midiDevice.onmidimessage = state.handleMidiMessage;
-    } else {        
-      if (midiDevice) {
-        console.log(`=== Sending MIDI note to ${midiDevice.name}`);
-        midiDevice.send([0x90, 0x45, 0x7f]);
-      }
-    }
-  });
-}
-
-function discoverMidiDevices(midiDevices, deviceType){
-  for (var device = midiDevices.next(); device && !device.done; device = midiDevices.next()) {
-    state.midiDevices[deviceType].push(device.value);   
-    //if (!device.value.name.includes('WebMIDI')) {
-      console.log(`- ${deviceType}: ${device.value.name}`);
-    //}
-  }
-}
-
-
-
-function removeAllMidiInputListeners() {
-  const inputs = state.midiAccess.inputs.values();
-  for (let input of inputs) {
-    input.onmidimessage = null;
-  }
-}
-
-
-function onMIDIMessage(event) {
-
-  let str = `MIDI message received at timestamp [${event.target.name}] ${event.timeStamp}[${event.data.length} bytes]: `;
-  for (const character of event.data) {
-    str += `0x${character.toString(16)} `;
-  }
-  const TIMING_CLOCK = 0xF8;
-  if( event.data != TIMING_CLOCK ){
-    console.log(str);
-  }
-}
-
-
-function initDevices(event) {
-  midiAccess = state.midiAccess
-  // Get a list of MIDI input and output devices
-  var inputs = midiAccess.inputs.values();
-  var outputs = midiAccess.outputs.values();
-
-  // Loop through the input devices and add them to the state object
-  discoverMidiDevices(inputs, 'input');
-  discoverMidiDevices(outputs, 'output');
-
-  // Populate & add listener to the MIDI device select control
-  populateDeviceSelectControl('input-select', 'input');
-  populateDeviceSelectControl('output-select', 'output');
-}
-
-// Create a function to initialize the application
-function initApp() {
-  // Request MIDI access
-  navigator.requestMIDIAccess({sysex: true}).then((midiAccess) => {
-    state.midiAccess = midiAccess;
-    initDevices();
-    midiAccess.onstatechange = (event) => initDevices;
-  })
-  .catch(function(error) {    
-    console.error(error);
-  });
-  
-}
 
 // Call the initApp function when the DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
