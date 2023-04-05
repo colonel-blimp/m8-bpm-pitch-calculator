@@ -7,6 +7,7 @@ function initApp() {
   const toBpmInput = document.querySelector('#to-bpm');
   const displayBox = document.querySelector('#display-box');
   const displayBoxHex = document.querySelector('#display-box-hex');
+  const displayBoxDetuneHex = document.querySelector('#display-box-detune-hex');
 
 
 
@@ -25,23 +26,30 @@ function initApp() {
   }
 
 
-  function warningMessageIfOutOfRange(semitoneChange) {
+  function dec2detuneHex(semitoneChange) {
     if(semitoneChange > 8 || semitoneChange < -8){
-      return `** WARNING ** Pitch change too big to express as M8 DETUNE value: ${+Number(semitoneChange).toFixed(2)}\n`
+      return `*OOB:* ${+Number(semitoneChange).toFixed(2)}\n`
     } else {
       return dec2hex(to_base16_80center(semitoneChange))
     }
   }
 
   function onBpmInputChange() {
+    if ((fromBpmInput.value > 0) && (toBpmInput.value == '')) {
+      toBpmInput.value = fromBpmInput.value;
+    } else if ((toBpmInput.value > 0) && (fromBpmInput == '')) {
+      fromBpmInput.value = toBpmInput.value;
+    };
+
+    
     const semitoneChange = convertBpmDiffToSemitones(parseFloat(fromBpmInput.value), parseFloat(toBpmInput.value));
     displayBox.value =  semitoneChange;
 
     const hex_pitch_change = dec2hex(semitoneChange*16);
     displayBoxHex.value = hex_pitch_change;
+    displayBoxDetuneHex.value = dec2detuneHex(semitoneChange);
 
     let debug_str = '';
-
     return debug_str;
 
   }
@@ -52,15 +60,11 @@ function initApp() {
 
   makeInputDraggable(fromBpmInput);
   makeInputDraggable(toBpmInput);
-  
+
   function makeInputDraggable(input){
     input.addEventListener('touchstart', function(event) {
-      // Disable scrolling behavior
-      //event.preventDefault();
-    
       // Store the starting y-coordinate of the touch
-      this.touchStartY = event.touches[0].clientY;
-    
+      this.touchStartY = event.touches[0].clientY;    
       // Store the current value of the input
       this.startValue = parseFloat(this.value) || 0;
     });

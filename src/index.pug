@@ -11,17 +11,19 @@ html
     .container
       .number-box
         label(for='from-bpm') From BPM
-        input(type='number' id='from-bpm' inputmode='numeric' placeholder='120')
+        input(type='number' id='from-bpm' inputmode='numeric')
       .number-box
         label(for='to-bpm') To BPM
-        input(type='number' id='to-bpm' inputmode='numeric' placeholder='140')
+        input(type='number' id='to-bpm' inputmode='numeric')
       .box
         .number-box
           label(for='display-box') Semitones
           input(id='display-box' readonly=true)
         .number-box
-          label(for='display-box-hex') Semitones (Hex)
+          label(for='display-box-hex') Hex
           input(id='display-box-hex' readonly=true)
-      
+        .number-box
+          label(for='display-box-detune-hex') Detune
+          input(id='display-box-detune-hex' readonly=true)
     script(src='js/app.js')
 
