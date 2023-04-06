@@ -1,3 +1,11 @@
+mixin bpm_number_input(label)
+  input(type='number' min=0 max=999 id=`${label}` inputmode='numeric')
+
+mixin knob(number)
+  +ui_control(`Knob ${number}`, 'knob')
+
+
+
 doctype html
 html
   head
@@ -9,21 +17,32 @@ html
 
   body
     .container
-      .number-box
-        label(for='from-bpm') From BPM
-        input(type='number' id='from-bpm' inputmode='numeric')
-      .number-box
-        label(for='to-bpm') To BPM
-        input(type='number' id='to-bpm' inputmode='numeric')
+      .box(class=['input-box'])
+        .number-box
+          label(for='from-bpm') From BPM
+          +bpm_number_input('from-bpm')
+        .number-box
+          label(for='to-bpm') To BPM
+          +bpm_number_input('to-bpm')
       .box
         .number-box
           label(for='display-box') Semitones
           input(id='display-box' readonly=true)
-        .number-box
-          label(for='display-box-hex') Hex
-          input(id='display-box-hex' readonly=true)
+          input(id='semitones-full-fraction' hidden=true )
         .number-box
           label(for='display-box-detune-hex') Detune
           input(id='display-box-detune-hex' readonly=true)
+        .number-box
+          label(for='display-box-pit-hex') 
+            code PIT
+          input(id='display-box-pit-hex' readonly=true)
+        .number-box
+          label(for='display-box-pit-fin-hex') 
+            code (PIT+) FIN
+          input(id='display-box-pit-fin-hex' readonly=true)          
+        .number-box
+          label(for='display-box-fin-hex') 
+            code FIN
+          input(id='display-box-fin-hex' readonly=true)                
     script(src='js/app.js')
 
