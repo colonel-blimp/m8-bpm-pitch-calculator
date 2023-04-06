@@ -36,6 +36,7 @@ label::after {
 }
 
 
+
 input {
   padding: 10px;
   margin-bottom: 1.2rem;
@@ -75,6 +76,14 @@ input {
     }
   }  
 }
+
+$invalid_text_color: #988;
+.invalid-value {
+  //border: 2px solid $invalid_text_color;
+  background-color: #ddd !important;
+  color: $invalid_text_color;
+}
+
 
 .input-box {
   background-color: #f8f8f8;

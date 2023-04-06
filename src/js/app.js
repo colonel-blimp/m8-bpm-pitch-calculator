@@ -16,10 +16,17 @@ function initApp() {
   const displayBoxPitFinHex = document.querySelector('#display-box-pit-fin-hex'); 
   const displayBoxDetuneHex = document.querySelector('#display-box-detune-hex');
   
+  // Add event listeners to the input elements
+  fromBpmInput.addEventListener('input', onBpmInputChange);
+  toBpmInput.addEventListener('input', onBpmInputChange);
+  
+  makeInputDraggable(fromBpmInput);
+  makeInputDraggable(toBpmInput);
+
   
   function dec2detuneHex(semitoneChange) {
     if(semitoneChange > 8 || semitoneChange < -8){
-      return `*OOB:* ${+Number(semitoneChange).toFixed(2)}\n`
+      return 'N/A'
     } else {
       return dec2hex(to_base16_80center(semitoneChange))
     }
@@ -27,12 +34,10 @@ function initApp() {
 
   function dec2finHex(semitoneChange) {
     if(semitoneChange > 1 || semitoneChange < -1){
-      return `*OOB:* ${+Number(semitoneChange).toFixed(2)}\n`
+      return 'N/A'
     } else {
-
       tickRate = semitoneChange > 0 ? 127 : 128
       const st2finTicks = semitoneChange * tickRate  // 127 max -128 min
-  
       return dec2hex(to_base16_7Fdown(st2finTicks))
     }
   }
@@ -49,28 +54,23 @@ function initApp() {
   function dec2pitFinHex(semitoneChange, pitHexValue) {
     let pit =  hex2dec(pitHexValue)
 
-
-    if ( semitoneChange < -1){
+    if ( semitoneChange < -1)
       pit = pit -256
-    } 
-
+ 
     if( pitHexValue == 'FF' )
-      pit = -1
-
+      pit = -1  // hacky guard
 
     let pd = semitoneChange - pit
 
-
     console.log(`pit: (${pitHexValue})  ${pit}  semitoneChange: ${semitoneChange} pd: ${pd}  `)
     let v = dec2finHex(pd)
-    
     
     return(v)
   } 
 
   function onBpmInputChange() {
-
-    // if one input is blank, make it the same as the other
+    // if one of the inputs is blank, make it the same as the other
+    // TODO: UX of this didn't turn out too great; see if there's a better way
     if ((fromBpmInput.value > 0) && (toBpmInput.value == '')) {
       toBpmInput.value = fromBpmInput.value;
     } else if ((toBpmInput.value > 0) && (fromBpmInput == '')) {
@@ -78,34 +78,29 @@ function initApp() {
     };
     
     const semitoneChange = bpm_to_pitch(parseFloat(fromBpmInput.value), parseFloat(toBpmInput.value));
-
-    semitoneDiffFull.value = semitoneChange
-
     const pitHexValue = dec2pitHex(semitoneChange);
-
-
     const pitFinHexValue = dec2pitFinHex(semitoneChange, pitHexValue);
 
-
+    // if the semitone change is less than 1, show 2 decimal places
     mantissaDigits = semitoneChange > -1 && semitoneChange < 1 ? 2 : 1 
-    displayBox.value = semitoneChange.toFixed(mantissaDigits);
-    displayBoxPitHex.value = pitHexValue;
+
+    semitoneDiffFull.value = semitoneChange // hidden input to keep full precision value
+    displayBox.value = semitoneChange.toFixed(mantissaDigits); // friendlier display value
     displayBoxDetuneHex.value = dec2detuneHex(semitoneChange);
-    displayBoxFinHex.value = dec2finHex(semitoneChange);
+    displayBoxPitHex.value = pitHexValue;
     displayBoxPitFinHex.value = pitFinHexValue
+    displayBoxFinHex.value = dec2finHex(semitoneChange);
 
-    let debug_str = '';
-    return debug_str;
-
+    [displayBox, displayBoxDetuneHex, displayBoxPitHex, displayBoxPitFinHex, displayBoxFinHex].forEach(function(el) {
+      if( /^[0-9A-Fa-f.]+$/.test( el.value ) ) {
+        el.classList.remove('invalid-value');
+      } else {
+        el.classList.add('invalid-value');
+      } 
+    });
   }
 
-  // Add event listeners to the input elements
-  fromBpmInput.addEventListener('input', onBpmInputChange);
-  toBpmInput.addEventListener('input', onBpmInputChange);
   
-  makeInputDraggable(fromBpmInput);
-  makeInputDraggable(toBpmInput);
-
   function makeInputDraggable(input){
     input.addEventListener('touchstart', function(event) {
       // Store the starting y-coordinate of the touch
@@ -122,14 +117,9 @@ function initApp() {
       let deltaY = this.touchStartY - event.touches[0].clientY;
     
       // Calculate the new value of the input based on the distance moved
-      let newValue = this.startValue + (deltaY / 10);
-    
-      if( newValue < 1 ) {
-        newValue = 1;
-      } 
-
-
-      
+      let newValue = this.startValue + (deltaY / 10);  
+      newValue = newValue < 1 ? 1 : newValue;
+  
       // If someone added a more precise fraction, keep that level of precision
       const str_mant = this.value.toString().split('.')[1]
       const mantissaDigits = str_mant ? str_mant.length : 0;
@@ -139,8 +129,7 @@ function initApp() {
     });
   
     input.addEventListener('touchend', onBpmInputChange);
-  }
-  
+  }  
 
 };
 
