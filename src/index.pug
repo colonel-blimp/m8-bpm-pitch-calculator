@@ -29,9 +29,7 @@ html
           label(for='display-box') Semitones
           input(id='display-box' readonly=true)
           input(id='semitones-full-fraction' hidden=true )
-        .number-box
-          label(for='display-box-detune-hex') Detune
-          input(id='display-box-detune-hex' readonly=true)
+
         .number-box
           label(for='display-box-pit-hex') 
             code PIT
@@ -40,6 +38,10 @@ html
           label(for='display-box-pit-fin-hex') 
             code (PIT+) FIN
           input(id='display-box-pit-fin-hex' readonly=true)          
+
+        .number-box
+          label(for='display-box-detune-hex') Detune
+          input(id='display-box-detune-hex' readonly=true)
         .number-box
           label(for='display-box-fin-hex') 
             code FIN
