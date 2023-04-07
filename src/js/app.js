@@ -4,6 +4,7 @@ const dec2hex = d => Math.round(d).toString(16).padStart(2, '0').slice(-2).toUpp
 const hex2dec = h => parseInt(h, 16)
 const bpm_to_pitch = (old_bpm, new_bpm) => Math.log2(new_bpm/old_bpm)*12
 
+const sdf = document.querySelector('#semitones-full-fraction');
 
 const decimalToHex = {
   normal: function(decimal) {
@@ -43,8 +44,8 @@ const decimalToHex = {
     const pitHex = this.pit(decimal);
     const pitDecimal = hexToDecimal.pit(pitHex);
     let decimalDiff = decimal - pitDecimal;
-    if( decimalDiff < 0 ){
-      decimalDiff = (decimal += 256) - pitDecimal
+    if( decimalDiff < -1 ){
+      decimalDiff = (decimal + 256) - pitDecimal
     }
     console.log(`remainder: (decimal: ${decimal} pitHex: ${pitHex}  pitDecimal: ${pitDecimal}  decimal - pitDecimal: ${decimalDiff} `)
 
