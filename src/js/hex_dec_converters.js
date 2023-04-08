@@ -5,7 +5,7 @@ class DecimalToHex {
     }
   
     static normal(decimal) {
-      return decimal.toString(16).padStart(2, '0');
+      return decimal.toString(16).padStart(2, '0').toUpperCase();
     }
   
     static pit(decimal) {

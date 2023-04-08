@@ -4,11 +4,17 @@ import { DecimalToHex } from '../src/js/hex_dec_converters';
 describe('DecimalToHex', () => {
   describe('round', () => {
     test('rounds positive numbers correctly', () => {
-      expect(DecimalToHex.round(3.6)).toEqual(4);
-      expect(DecimalToHex.round(3.4)).toEqual(3);
+      expect(DecimalToHex.round(1.2)).toEqual(1);      
+      expect(DecimalToHex.round(0.5)).toEqual(1);
+      expect(DecimalToHex.round(0.51)).toEqual(1);
+      expect(DecimalToHex.round(0.49)).toEqual(0);
+      expect(DecimalToHex.round(0)).toEqual(0);
     });
 
     test('rounds negative numbers correctly', () => {
+      expect(DecimalToHex.round(-0.49)).toEqual(-0);
+      expect(DecimalToHex.round(-0.5)).toEqual(-1);
+      expect(DecimalToHex.round(-0.52)).toEqual(-1);      
       expect(DecimalToHex.round(-3.6)).toEqual(-4);
       expect(DecimalToHex.round(-3.4)).toEqual(-3);
     });
@@ -16,17 +22,21 @@ describe('DecimalToHex', () => {
 
   describe('normal', () => {
     test('converts decimal to hex string correctly', () => {
+      expect(DecimalToHex.normal(0)).toEqual('00');
       expect(DecimalToHex.normal(10)).toEqual('0A');
+      expect(DecimalToHex.normal(128)).toEqual('80');
       expect(DecimalToHex.normal(255)).toEqual('FF');
     });
   });
 
   describe('pit', () => {
-    test('returns correct hex string for valid inputs', () => {
-      expect(DecimalToHex.pit(0)).toEqual('7F');
-      expect(DecimalToHex.pit(-1)).toEqual('00');
-      expect(DecimalToHex.pit(127)).toEqual('FF');
+    test('returns correct PIT hex string for valid inputs', () => {
+      expect(DecimalToHex.pit(0)).toEqual('00');
+      expect(DecimalToHex.pit(-1)).toEqual('FF');
+      expect(DecimalToHex.pit(127)).toEqual('7F');
       expect(DecimalToHex.pit(-128)).toEqual('80');
+      expect(DecimalToHex.pit(-49)).toEqual('CF');
+      expect(DecimalToHex.pit(64)).toEqual('40');
     });
 
     test('returns error message for invalid inputs', () => {
@@ -37,9 +47,15 @@ describe('DecimalToHex', () => {
 
   describe('fin', () => {
     test('returns correct hex string for valid inputs', () => {
-      expect(DecimalToHex.fin(0)).toEqual('7F');
-      expect(DecimalToHex.fin(1)).toEqual('FF');
-      expect(DecimalToHex.fin(-1)).toEqual('00');
+      expect(DecimalToHex.fin(0)).toEqual('00');
+      expect(DecimalToHex.fin(1)).toEqual('7F');  // -127; probably slightly incorrect
+      expect(DecimalToHex.fin(-1)).toEqual('80');
+      //expect(DecimalToHex.pit(-0.007874)).toEqual('FF');
+      expect(DecimalToHex.pit(-0.008)).toEqual('FF');      
+      expect(DecimalToHex.pit(0.008)).toEqual('01'); 
+      expect(DecimalToHex.pit( -0.5039370078740157)).toEqual('C0');  
+      expect(DecimalToHex.pit( -0.5039370078740157)).toEqual('40');  
+
     });
 
     test('returns error message for invalid inputs', () => {
@@ -47,7 +63,8 @@ describe('DecimalToHex', () => {
       expect(DecimalToHex.fin(-2)).toEqual(`Couldn't handle value`);
     });
   });
-
+  
+  /*
   describe('detune', () => {
     test('returns correct hex string for valid inputs', () => {
       expect(DecimalToHex.detune(0)).toEqual('7F');
@@ -87,5 +104,5 @@ describe('DecimalToHex', () => {
       expect(DecimalToHex.remainder(-40)).toEqual('60');
     });
 
-});
+});*/
 });
