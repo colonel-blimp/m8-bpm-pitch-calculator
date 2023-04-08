@@ -19,10 +19,18 @@ class DecimalToHex {
     }
   
     static fin(decimal) {
+      decimal=Number(decimal)
       if (decimal >= 0 && decimal <= 1) {
         return DecimalToHex.round(decimal * 127).toString(16).padStart(2, '0').toUpperCase();;
       } else if (decimal >= -1 && decimal < 0) {
-        return (DecimalToHex.round((decimal + 1) * 127) + 128).toString(16).padStart(2, '0').toUpperCase();;
+        let v = DecimalToHex.round(
+          Math.min(
+            (decimal + 1) * 128
+            ,127 // fix for [<0 .. -0.0039], which round to 128
+          )
+        ) + 128;
+        
+        return (v.toString(16).padStart(2, '0').toUpperCase());
       } else {
         return ("Couldn't handle value");
       }

@@ -1,6 +1,7 @@
 import {describe, expect, test} from '@jest/globals';
 import { DecimalToHex } from '../src/js/hex_dec_converters';
 
+
 describe('DecimalToHex', () => {
   describe('round', () => {
     test('rounds positive numbers correctly', () => {
@@ -32,6 +33,7 @@ describe('DecimalToHex', () => {
   describe('pit', () => {
     test('returns correct PIT hex string for valid inputs', () => {
       expect(DecimalToHex.pit(0)).toEqual('00');
+      expect(DecimalToHex.pit(1)).toEqual('01');
       expect(DecimalToHex.pit(-1)).toEqual('FF');
       expect(DecimalToHex.pit(127)).toEqual('7F');
       expect(DecimalToHex.pit(-128)).toEqual('80');
@@ -46,18 +48,33 @@ describe('DecimalToHex', () => {
   });
 
   describe('fin', () => {
-    test('returns correct hex string for valid inputs', () => {
+    // for( let i=1; i >-1.1; i-=0.01 ){
+    //   process.stdout.write(`DecimalToHex.pit(${i}): ${DecimalToHex.pit}`)
+    //   i = i.toFixed(2);
+    //   test.todo(`DecimalToHex.fin(${i}): ${DecimalToHex.fin(i)}`);
+    // }    
+    test('returns correct hex string for valid inputs (0+)', () => {
       expect(DecimalToHex.fin(0)).toEqual('00');
       expect(DecimalToHex.fin(1)).toEqual('7F');  // -127; probably slightly incorrect
-      expect(DecimalToHex.fin(-1)).toEqual('80');
-      //expect(DecimalToHex.pit(-0.007874)).toEqual('FF');
-      expect(DecimalToHex.pit(-0.008)).toEqual('FF');      
-      expect(DecimalToHex.pit(0.008)).toEqual('01'); 
-      expect(DecimalToHex.pit( -0.5039370078740157)).toEqual('C0');  
-      expect(DecimalToHex.pit( -0.5039370078740157)).toEqual('40');  
-
+      expect(DecimalToHex.fin( 0.5)).toEqual('40');
+      expect(DecimalToHex.fin(0.008)).toEqual('01');      
     });
 
+    test('returns correct hex string for valid inputs (tiny -0.*)', () => {
+      expect(DecimalToHex.fin(-0.0039)).toEqual('FF');
+      expect(DecimalToHex.fin(-0.0001)).toEqual('FF');            
+      expect(DecimalToHex.fin(-0.01)).toEqual('FF');          
+    });    
+    test('returns correct hex string for valid inputs', () => {
+      expect(DecimalToHex.fin(-0.02)).toEqual('FD'); 
+    });
+    test('returns correct hex string for valid inputs', () => {     
+      expect(DecimalToHex.fin(-1.00)).toEqual('80');
+      expect(DecimalToHex.fin(-0.88)).toEqual('8F'); 
+      expect(DecimalToHex.fin( -0.5)).toEqual('C0');        
+    });
+
+      
     test('returns error message for invalid inputs', () => {
       expect(DecimalToHex.fin(2)).toEqual(`Couldn't handle value`);
       expect(DecimalToHex.fin(-2)).toEqual(`Couldn't handle value`);
