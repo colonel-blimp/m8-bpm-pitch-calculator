@@ -1,118 +1,9 @@
-const to_base16_80center = pitch_change => 128 + (Number(pitch_change) * 16)
-const to_base16_7Fdown = pitch_change => 256 + (Number(pitch_change) )
-const dec2hex = d => Math.round(d).toString(16).padStart(2, '0').slice(-2).toUpperCase()
-const hex2dec = h => parseInt(h, 16)
-const bpm_to_pitch = (old_bpm, new_bpm) => Math.log2(new_bpm/old_bpm)*12
+import { DecimalToHex } from './hex_dec_converters.js';
 
-const sdf = document.querySelector('#semitones-full-fraction');
-
-const decimalToHex = {
-  normal: function(decimal) {
-    return decimal.toString(16).padStart(2, '0');
-  },
-  pit: function(decimal) {
-    if (decimal >= 0 && decimal <= 127) {
-      return Math.round(decimal).toString(16).padStart(2, '0').toUpperCase();
-    } else if (decimal >= -128 && decimal < 0) {
-      return (Math.round(decimal + 255.5).toString(16).padStart(2, '0').toUpperCase());
-    } else {
-      return (`Couldn't handle value: ${decimal}`);
-    }
-  },
-
-  fin: function(decimal) {
-    if (decimal >= 0 && decimal <= 1) {
-      return Math.round(decimal * 127).toString(16).padStart(2, '0').toUpperCase();;
-    } else if (decimal >= -1 && decimal < 0) {
-      return (Math.round((decimal + 1) * 127) + 128).toString(16).padStart(2, '0').toUpperCase();;
-    } else {
-      return ("Couldn't handle value");
-    }
-  },
-
-  detune: function(decimal) {
-    if (decimal >= 0 && decimal <= 8) {
-      return (Math.round((decimal/8) * 128) + 127 ).toString(16).padStart(2, '0').toUpperCase();
-    } else if (decimal >= -8 && decimal < 0) {
-      return (Math.round((decimal/8 + 1) * 128)  ).toString(16).padStart(2, '0').toUpperCase();
-    } else {
-      return (`Couldn't handle value: ${decimal}`);
-    }
-  },
-
-  remainder: function(decimal) {
-    const pitHex = this.pit(decimal);
-    const pitDecimal = hexToDecimal.pit(pitHex);
-    let decimalDiff = decimal - pitDecimal;
-    if( decimalDiff < -1 ){
-      decimalDiff = (decimal + 256) - pitDecimal
-    }
-    console.log(`remainder: (decimal: ${decimal} pitHex: ${pitHex}  pitDecimal: ${pitDecimal}  decimal - pitDecimal: ${decimalDiff} `)
-
-    return this.fin(decimalDiff);
-  }
-};
-
-
-
-
-
-const hexToDecimal = {
-  normal: function(hex) {
-    return parseInt(hex, 16);
-  },
-  pit: function(hex) {
-    this.fail_if_not_hex(hex)
-    const decimal = parseInt(hex, 16);
-    if (decimal >= 0 && decimal <= 127) {
-      return Math.round(decimal);
-    } else if (decimal >= 128 && decimal <= 255) {
-      return Math.round(decimal - 255) - 1;
-    } else {
-      return NaN;
-    }
-  },
-
-  fin: function(hex) {
-    this.fail_if_not_hex(hex)
-    let decimal = parseInt(hex, 16);
-    if (decimal >= 0 && decimal <= 127) {
-      return (decimal / 127).toFixed(2);
-    } else if (decimal >= 128 && decimal <= 255) {
-      return ((decimal - 128) / 127).toFixed(2) - 1;
-    } else {
-      return "Couldn't handle value";
-    }
-  },
-
-  
-  detune: function(hex) {
-    this.fail_if_not_hex(hex)
-    const decimal = parseInt(hex, 16);
-    if (decimal >= 127 && decimal <= 255) {
-      return  (((decimal - 127) / 128) * 8)
-    } else if (decimal >= 0 && decimal < 127) {
-      // not sure why the -0.0625 is needed here, but it is
-      return ((((decimal - 127) / 128) * 8)  + -0.0625 )
-    } else {
-      return (`Couldn't handle value: ${hex}`);
-    }  
-  },
-
-  fail_if_not_hex(hex) {
-    if (hex.length != 2) {
-      throw new Error(`hex value must be 2 characters long, got ${hex}`)
-    }
-    if (hex.match(/[^0-9A-Fa-f]/)) {
-      throw new Error(`hex value must be 2 characters long, got ${hex}`)
-    }
-  }
-};
-
-
+export const bpm_to_pitch = (old_bpm, new_bpm) => Math.log2(new_bpm/old_bpm)*12
 
 // Create a function to initialize the application
-function initApp() {
+export function initApp() {
   // Select the input elements
   const fromBpmInput = document.querySelector('#from-bpm');
   const toBpmInput = document.querySelector('#to-bpm');
@@ -130,35 +21,12 @@ function initApp() {
   makeInputDraggable(fromBpmInput);
   makeInputDraggable(toBpmInput);
 
-  
-  function dec2detuneHex(semitoneChange) {
-    if(semitoneChange > 8 || semitoneChange < -8){
-      return 'N/A'
-    } else {
-      return decimalToHex.detune(semitoneChange)
-    }
-  }
-
-  function dec2finHex(semitoneChange) {
-
-    if(semitoneChange > 1 || semitoneChange < -1){
-      return 'N/A'
-    } else {
-      return(decimalToHex.fin(semitoneChange))
-    }
-  }
-
-  function dec2pitHex(semitoneChange) {
-    return(decimalToHex.pit(semitoneChange))
-  }
-
-  function dec2pitFinHex(semitoneChange) {
-    let v = decimalToHex.remainder(semitoneChange)
-    
-    return(v)
-  } 
 
   function onBpmInputChange() {
+    function runWithinRange( fnnn, v, min, max, na_fn=(v)=>{'N/A'}) {
+      return (v > max || v < min) ? 'N/A' : fnnn(v);
+    }
+  
     // if one of the inputs is blank, make it the same as the other
     // TODO: UX of this didn't turn out too great; see if there's a better way
     //   starting at 60, so it doesn't match after typing the `1` in `120`
@@ -169,19 +37,23 @@ function initApp() {
     };
     
     const semitoneChange = bpm_to_pitch(parseFloat(fromBpmInput.value), parseFloat(toBpmInput.value));
-    const pitHexValue = dec2pitHex(semitoneChange);
-    const pitFinHexValue = dec2pitFinHex(semitoneChange);
 
     // if the semitone change is less than 1, show 2 decimal places
-    mantissaDigits = semitoneChange > -1 && semitoneChange < 1 ? 2 : 1 
+    const mantissaDigits = semitoneChange > -1 && semitoneChange < 1 ? 2 : 1 
+
+
+    const dec2fin = (semitoneChange) => {
+      runWithinRange((DecimalToHex.fin), semitoneChange, -1, 1)
+    }
 
     semitoneDiffFull.value = semitoneChange // hidden input to keep full precision value
     displayBox.value = semitoneChange.toFixed(mantissaDigits); // friendlier display value
-    displayBoxDetuneHex.value = dec2detuneHex(semitoneChange);
-    displayBoxPitHex.value = pitHexValue;
-    displayBoxPitFinHex.value = pitFinHexValue
-    displayBoxFinHex.value = dec2finHex(semitoneChange);
+    displayBoxDetuneHex.value = runWithinRange((DecimalToHex.detune), semitoneChange, -8, 8);
+    displayBoxPitHex.value = DecimalToHex.pit(semitoneChange);
+    displayBoxPitFinHex.value = DecimalToHex.remainder(semitoneChange);
+    displayBoxFinHex.value = dec2fin(semitoneChange);
 
+    
     [displayBoxDetuneHex, displayBoxPitHex, displayBoxPitFinHex, displayBoxFinHex].forEach(function(el) {
       if( /^[0-9A-Fa-f.]+$/.test( el.value ) ) {
         el.classList.remove('invalid-value');
@@ -204,7 +76,7 @@ function initApp() {
       // Disable scrolling behavior
       event.preventDefault();
     
-      // Calculate the distance moved by the touch
+      // Calculate the distance moved by the touchdisplayBoxFinHex
       let deltaY = this.touchStartY - event.touches[0].clientY;
     
       // Calculate the new value of the input based on the distance moved
@@ -223,8 +95,6 @@ function initApp() {
   }  
 
 };
-
-
 
 
 // Call the initApp function when the DOM is ready
