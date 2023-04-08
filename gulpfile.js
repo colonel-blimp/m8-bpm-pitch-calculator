@@ -8,8 +8,9 @@ const uglify = require('gulp-uglify');
 const argv = require('yargs').argv
 const spawn = require('child_process').spawn;
 const browserSync = require('browser-sync').create();
+//const reload      = browserSync.reload;
+const jest = require('gulp-jest').default;
 
-const reload      = browserSync.reload;
 
 gulp.task('pug', function() {
   return gulp.src('src/**/*.pug')
@@ -47,17 +48,33 @@ gulp.task('moveFavicon', function() {
     .pipe(gulp.dest('dist/'));
 });
 
+
+gulp.task('jest', function () {
+  return gulp.src('__tests__').pipe(jest({
+    "preprocessorIgnorePatterns": [
+      "<rootDir>/dist/", "<rootDir>/node_modules/"
+    ],
+    "automock": false
+  }));
+});
+
+
 gulp.task('default', function() {
 
   browserSync.init({
+    https: true,
     server: {
-       baseDir: './dist'
+       baseDir: './dist',
+       https: true,
     },
   });
 
   gulp.watch('src/**/*.pug', gulp.series('pug'));
   gulp.watch('src/**/*.scss', gulp.series('scss'));
   gulp.watch('src/**/*.js', gulp.series('js'));
+  gulp.watch('src/**/*.js', gulp.series('jest'));
+  gulp.watch('__tests__/**/*.js', gulp.series('jest'));
+
   gulp.watch('src/assets/favicon.ico', gulp.series('moveFavicon'));
   let process;
 
