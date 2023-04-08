@@ -2,7 +2,7 @@
   "name": "m8calc",
   "version": "1.0.0",
   "description": "",
-  "exports": "./index.js",
+  "exports": "./app.js",
   "author": "",
   "license": "ISC",
   "devDependencies": {
@@ -28,13 +28,12 @@
   "type": "module",
   "jest": {
     "transform": {},
-    "testEnvironment": "jest-environment-node",
-    "resolve": {
-      "fullySpecified": false
-    }
+    "testEnvironment": "jsdom"
   },
   "scripts": {
-    "test": "NODE_OPTIONS=--experimental-vm-modules node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "gulp": "NODE_OPTIONS=--experimental-vm-modules npx gulp"
+    "test": "NODE_OPTIONS=--experimental-vm-modules node node_modules/jest/bin/jest.js",
+    "gulp": "NODE_OPTIONS=--experimental-vm-modules npx gulp",
+    "debug": "NODE_OPTIONS=--experimental-vm-modules node --inspect-brk src/app.js",
+    "start": "NODE_OPTIONS=--experimental-vm-modules node node_modules/webpack-dev-server/bin/webpack-dev-server.js --mode development --open"
   }
 }
