@@ -1,16 +1,23 @@
-const gulp = require('gulp');
-const pug = require('gulp-pug');
-const sass = require('gulp-sass')(require('node-sass'));
-const autoprefixer = require('gulp-autoprefixer');
-const cleanCss = require('gulp-clean-css');
-const rename = require('gulp-rename');
-const uglify = require('gulp-uglify');
-const argv = require('yargs').argv
-const spawn = require('child_process').spawn;
-const browserSync = require('browser-sync').create();
-//const reload      = browserSync.reload;
-const jest = require('gulp-jest').default;
+import gulp from 'gulp';
+import pug from 'gulp-pug';
+import dartSass from 'sass';
+import gulpSass from 'gulp-sass';
+import autoprefixer from 'gulp-autoprefixer';
+import cleanCss from 'gulp-clean-css';
+import rename from 'gulp-rename';
+import uglify from 'gulp-uglify';
+import yargs from 'yargs';
+import { spawn as spawn_alias } from 'cross-spawn';
+const sass  = gulpSass(dartSass);
+const spawn = spawn_alias.spawn;
+const argv  = yargs.argv;
 
+import browserSync_alias from 'browser-sync';
+const browserSync = browserSync_alias.create();
+
+import { runCLI } from '@jest/core';
+
+const {execSync} = await import('node:child_process');
 
 gulp.task('pug', function() {
   return gulp.src('src/**/*.pug')
@@ -49,18 +56,21 @@ gulp.task('moveFavicon', function() {
 });
 
 
-gulp.task('jest', function () {
-  return gulp.src('__tests__').pipe(jest({
-    "preprocessorIgnorePatterns": [
-      "<rootDir>/dist/", "<rootDir>/node_modules/"
-    ],
-    "automock": false
-  }));
+// Jest UT
+gulp.task('jest', function(done) {
+  runCLI({}, ['.'])
+    .then((result) => {
+      //if (result.results && result.results.numFailedTests > 0) process.exit();
+      done();
+    })
+    .catch((e) => {
+      console.log(e);
+    })
 });
 
 
-gulp.task('default', function() {
 
+gulp.task('default', function() {
   browserSync.init({
     https: true,
     server: {
@@ -71,8 +81,7 @@ gulp.task('default', function() {
 
   gulp.watch('src/**/*.pug', gulp.series('pug'));
   gulp.watch('src/**/*.scss', gulp.series('scss'));
-  gulp.watch('src/**/*.js', gulp.series('js'));
-  gulp.watch('src/**/*.js', gulp.series('jest'));
+  gulp.watch('src/**/*.js', gulp.parallel('js','jest'));
   gulp.watch('__tests__/**/*.js', gulp.series('jest'));
 
   gulp.watch('src/assets/favicon.ico', gulp.series('moveFavicon'));
