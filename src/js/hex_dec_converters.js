@@ -51,12 +51,12 @@ class DecimalToHex {
       } else {
         return (`Couldn't handle value: ${decimal}`);
       }
-    }
+    }q
 
     static remainder(decimal) {
       const pitHex = DecimalToHex.pit(decimal);
       const pitDecimal = HexToDecimal.pit(pitHex);
-      let decimalDiff = decimal - pitDecimal;   
+      let decimalDiff = decimal - pitDecimal;
       console.log(`remainder 1: (decimal: ${decimal} pitHex: ${pitHex}  pitDecimal: ${pitDecimal}  decimal - pitDecimal: ${decimalDiff}   DecimalToHex.fin(${decimalDiff}): ${DecimalToHex.fin(decimalDiff)} `)
 
       return DecimalToHex.fin(decimalDiff);
@@ -68,11 +68,11 @@ class DecimalToHex {
     static round(v) {
       return Math.sign(v) * Math.round(Math.abs(v));
     }
-  
+
     static normal(hex) {
       return parseInt(hex, 16);
     }
-  
+
     static pit(hex) {
       HexToDecimal.fail_if_not_hex(hex);
       const decimal = parseInt(hex, 16);
@@ -84,7 +84,8 @@ class DecimalToHex {
         return NaN;
       }
     }
-  
+
+  /*
     static fin(hex) {
       HexToDecimal.fail_if_not_hex(hex);
       let decimal = parseInt(hex, 16);
@@ -96,7 +97,7 @@ class DecimalToHex {
         return "Couldn't handle value";
       }
     }
-  
+
     static detune(hex) {
       HexToDecimal.fail_if_not_hex(hex);
       const decimal = parseInt(hex, 16);
@@ -108,7 +109,7 @@ class DecimalToHex {
         return (`Couldn't handle value: ${hex}`);
       }
     }
-  
+  */
     static fail_if_not_hex(hex) {
       if (hex.length != 2) {
         throw new Error(`hex value must be 2 characters long, got ${hex}`);
