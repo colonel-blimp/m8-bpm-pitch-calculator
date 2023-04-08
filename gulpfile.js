@@ -60,6 +60,7 @@ gulp.task('moveFavicon', function() {
 gulp.task('jest', function(done) {
   runCLI({}, ['.'])
     .then((result) => {
+      result.results;
       //if (result.results && result.results.numFailedTests > 0) process.exit();
       done();
     })
@@ -69,6 +70,7 @@ gulp.task('jest', function(done) {
 });
 
 
+gulp.task('build', gulp.parallel('pug', 'scss', 'js', 'moveFavicon'));
 
 gulp.task('default', function() {
   browserSync.init({
