@@ -5,7 +5,7 @@ import { DecimalToHex } from '../src/js/hex_dec_converters';
 describe('DecimalToHex', () => {
   describe('round', () => {
     test('rounds positive numbers correctly', () => {
-      expect(DecimalToHex.round(1.2)).toEqual(1);      
+      expect(DecimalToHex.round(1.2)).toEqual(1);
       expect(DecimalToHex.round(0.5)).toEqual(1);
       expect(DecimalToHex.round(0.51)).toEqual(1);
       expect(DecimalToHex.round(0.49)).toEqual(0);
@@ -15,7 +15,7 @@ describe('DecimalToHex', () => {
     test('rounds negative numbers correctly', () => {
       expect(DecimalToHex.round(-0.49)).toEqual(-0);
       expect(DecimalToHex.round(-0.5)).toEqual(-1);
-      expect(DecimalToHex.round(-0.52)).toEqual(-1);      
+      expect(DecimalToHex.round(-0.52)).toEqual(-1);
       expect(DecimalToHex.round(-3.6)).toEqual(-4);
       expect(DecimalToHex.round(-3.4)).toEqual(-3);
     });
@@ -48,43 +48,46 @@ describe('DecimalToHex', () => {
   });
 
   describe('fin', () => {
-    // for( let i=1; i >-1.1; i-=0.01 ){
-    //   process.stdout.write(`DecimalToHex.pit(${i}): ${DecimalToHex.pit}`)
-    //   i = i.toFixed(2);
-    //   test.todo(`DecimalToHex.fin(${i}): ${DecimalToHex.fin(i)}`);
-    // }    
+
+    test.skip('output entire range of fin values', () => {
+      for( let i=1; i >-1.1; i-=0.01 ){
+        process.stdout.write(`DecimalToHex.pit(${i}): ${DecimalToHex.pit}`)
+        i = i.toFixed(2);
+        test.todo(`DecimalToHex.fin(${i}): ${DecimalToHex.fin(i)}`);
+      }
+    })
     test('returns correct hex string for valid inputs (0+)', () => {
       expect(DecimalToHex.fin(0)).toEqual('00');
       expect(DecimalToHex.fin(1)).toEqual('7F');  // -127; probably slightly incorrect
       expect(DecimalToHex.fin( 0.5)).toEqual('40');
-      expect(DecimalToHex.fin(0.008)).toEqual('01');      
+      expect(DecimalToHex.fin(0.008)).toEqual('01');
     });
 
     test('returns correct hex string for valid inputs (tiny -0.*)', () => {
       expect(DecimalToHex.fin(-0.0039)).toEqual('FF');
-      expect(DecimalToHex.fin(-0.0001)).toEqual('FF');            
-      expect(DecimalToHex.fin(-0.01)).toEqual('FF');          
-    });    
-    test('returns correct hex string for valid inputs', () => {
-      expect(DecimalToHex.fin(-0.02)).toEqual('FD'); 
+      expect(DecimalToHex.fin(-0.0001)).toEqual('FF');
+      expect(DecimalToHex.fin(-0.01)).toEqual('FF');
     });
-    test('returns correct hex string for valid inputs', () => {     
+    test('returns correct hex string for valid inputs', () => {
+      expect(DecimalToHex.fin(-0.02)).toEqual('FD');
+    });
+    test('returns correct hex string for valid inputs', () => {
       expect(DecimalToHex.fin(-1.00)).toEqual('80');
-      expect(DecimalToHex.fin(-0.88)).toEqual('8F'); 
-      expect(DecimalToHex.fin( -0.5)).toEqual('C0');        
+      expect(DecimalToHex.fin(-0.88)).toEqual('8F');
+      expect(DecimalToHex.fin( -0.5)).toEqual('C0');
     });
 
-      
+
     test('returns error message for invalid inputs', () => {
       expect(DecimalToHex.fin(2)).toEqual(`Couldn't handle value`);
       expect(DecimalToHex.fin(-2)).toEqual(`Couldn't handle value`);
     });
   });
-  
-  /*
+
+
   describe('detune', () => {
     test('returns correct hex string for valid inputs', () => {
-      expect(DecimalToHex.detune(0)).toEqual('7F');
+      expect(DecimalToHex.detune(0)).toEqual('80');
       expect(DecimalToHex.detune(8)).toEqual('FF');
       expect(DecimalToHex.detune(-8)).toEqual('00');
     });
@@ -95,9 +98,9 @@ describe('DecimalToHex', () => {
     });
   });
 
-  describe('remainder', () => {
+  describe.skip('remainder', () => {
     test('returns correct hex string for valid inputs', () => {
-      expect(DecimalToHex.remainder(0)).toEqual('7F');
+      expect(DecimalToHex.remainder(0)).toEqual('00');
       expect(DecimalToHex.remainder(1.5)).toEqual('FF');
       expect(DecimalToHex.remainder(-1.5)).toEqual('00');
     });
@@ -121,5 +124,5 @@ describe('DecimalToHex', () => {
       expect(DecimalToHex.remainder(-40)).toEqual('60');
     });
 
-});*/
+});
 });
