@@ -69,15 +69,25 @@ gulp.task('jest', function(done) {
     })
 });
 
+gulp.task('copy', function() {
+  return gulp.src('src/**/*.json')
+    //.pipe(uglify())
+    //.pipe(rename({suffix: '.min'}))
+    .pipe(gulp.dest('dist'))
+    .pipe(browserSync.reload({
+      stream: true
+    }))
+});
+
 
 gulp.task('build', gulp.parallel('pug', 'scss', 'js', 'moveFavicon'));
 
 gulp.task('default', function() {
   browserSync.init({
-    https: true,
+    //https: true,
     server: {
        baseDir: './dist',
-       https: true,
+       //https: true,
     },
   });
 
@@ -85,6 +95,7 @@ gulp.task('default', function() {
   gulp.watch('src/**/*.scss', gulp.series('scss'));
   gulp.watch('src/**/*.js', gulp.parallel('js','jest'));
   gulp.watch('__tests__/**/*.js', gulp.series('jest'));
+  gulp.watch('src/**/*.json', gulp.series('copy'));
 
   gulp.watch('src/assets/favicon.ico', gulp.series('moveFavicon'));
   let process;

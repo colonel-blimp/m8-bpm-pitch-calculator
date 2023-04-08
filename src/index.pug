@@ -1,29 +1,26 @@
-mixin bpm_number_input(label)
-  input(type='number' min=0 max=999 id=`${label}` inputmode='numeric')
-
-mixin knob(number)
-  +ui_control(`Knob ${number}`, 'knob')
-
-
+mixin bpm_number_input(label,value)
+  input(type='number' min=0 max=999 value=`${value}` id=`${label}` inputmode='numeric')
 
 doctype html
 html
   head
     meta(name='viewport' content='width=device-width,initial-scale=1')
     meta(charset='UTF-8')
-    title My PWA
+    title M8 Tempo Change Pitch Calculator
     link(rel='stylesheet' href='styles/styles.css')
-      
+    link(rel="manifest" href="/manifest.json")
+    meta(name="apple-mobile-web-app-capable" content="yes")
+    meta(name="mobile-web-app-capable" content="yes")
 
   body
     .container
       .box(class=['input-box'])
         .number-box
           label(for='from-bpm') From BPM
-          +bpm_number_input('from-bpm')
+          +bpm_number_input('from-bpm',120)
         .number-box
           label(for='to-bpm') To BPM
-          +bpm_number_input('to-bpm')
+          +bpm_number_input('to-bpm',160)
       .box
         .number-box
           label(for='display-box') Semitones
@@ -47,4 +44,15 @@ html
             code FIN
           input(id='display-box-fin-hex' readonly=true)                
     script(src='js/app.js' type='module')
-
+    script.
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('js/service-worker.js').then(function(registration) {
+            // Registration was successful
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          }, function(err) {
+            // registration failed :(
+            console.log('ServiceWorker registration failed: ', err);
+          });
+        });
+      }
