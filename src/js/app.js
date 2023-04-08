@@ -42,8 +42,8 @@ export function initApp() {
     const mantissaDigits = semitoneChange > -1 && semitoneChange < 1 ? 2 : 1 
 
 
-    const dec2fin = (semitoneChange) => {
-      runWithinRange((DecimalToHex.fin), semitoneChange, -1, 1)
+    function dec2fin(semitoneChange) {
+      return runWithinRange((DecimalToHex.fin), semitoneChange, -1, 1)
     }
 
     semitoneDiffFull.value = semitoneChange // hidden input to keep full precision value
@@ -53,7 +53,6 @@ export function initApp() {
     displayBoxPitFinHex.value = DecimalToHex.remainder(semitoneChange);
     displayBoxFinHex.value = dec2fin(semitoneChange);
 
-    
     [displayBoxDetuneHex, displayBoxPitHex, displayBoxPitFinHex, displayBoxFinHex].forEach(function(el) {
       if( /^[0-9A-Fa-f.]+$/.test( el.value ) ) {
         el.classList.remove('invalid-value');

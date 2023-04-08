@@ -55,9 +55,8 @@ class DecimalToHex {
 
     static remainder(decimal) {
       const pitHex = DecimalToHex.pit(decimal);
-
-      const pitDecimal = hexToDecimal.pit(pitHex);
-      let decimalDiff = decimal - pitDecimal;
+      const pitDecimal = HexToDecimal.pit(pitHex);
+      let decimalDiff = decimal - pitDecimal;   
       console.log(`remainder 1: (decimal: ${decimal} pitHex: ${pitHex}  pitDecimal: ${pitDecimal}  decimal - pitDecimal: ${decimalDiff}   DecimalToHex.fin(${decimalDiff}): ${DecimalToHex.fin(decimalDiff)} `)
 
       return DecimalToHex.fin(decimalDiff);
@@ -65,28 +64,29 @@ class DecimalToHex {
   }
 
 
-
-  const hexToDecimal = {
-    // handle -0.5 rounding as expected
-    round: v => Math.sign(v) * Math.round(Math.abs(v)),
-
-    normal: function(hex) {
+  class HexToDecimal {
+    static round(v) {
+      return Math.sign(v) * Math.round(Math.abs(v));
+    }
+  
+    static normal(hex) {
       return parseInt(hex, 16);
-    },
-    pit: function(hex) {
-      hexToDecimal.fail_if_not_hex(hex)
+    }
+  
+    static pit(hex) {
+      HexToDecimal.fail_if_not_hex(hex);
       const decimal = parseInt(hex, 16);
       if (decimal >= 0 && decimal <= 127) {
-        return hexToDecimal.round(decimal);
+        return HexToDecimal.round(decimal);
       } else if (decimal >= 128 && decimal <= 255) {
-        return hexToDecimal.round(decimal - 255) - 1;
+        return HexToDecimal.round(decimal - 255) - 1;
       } else {
         return NaN;
       }
-    },
-
-    fin: function(hex) {
-      hexToDecimal.fail_if_not_hex(hex)
+    }
+  
+    static fin(hex) {
+      HexToDecimal.fail_if_not_hex(hex);
       let decimal = parseInt(hex, 16);
       if (decimal >= 0 && decimal <= 127) {
         return (decimal / 127).toFixed(2);
@@ -95,30 +95,29 @@ class DecimalToHex {
       } else {
         return "Couldn't handle value";
       }
-    },
-
-
-    detune: function(hex) {
-      hexToDecimal.fail_if_not_hex(hex)
+    }
+  
+    static detune(hex) {
+      HexToDecimal.fail_if_not_hex(hex);
       const decimal = parseInt(hex, 16);
       if (decimal >= 127 && decimal <= 255) {
-        return  (((decimal - 127) / 128) * 8)
+        return (((decimal - 127) / 128) * 8);
       } else if (decimal >= 0 && decimal < 127) {
-        // not sure why the -0.0625 is needed here, but it is
-        return ((((decimal - 127) / 128) * 8)  + -0.0625 )
+        return ((((decimal - 127) / 128) * 8) + -0.0625);
       } else {
         return (`Couldn't handle value: ${hex}`);
       }
-    },
-
-    fail_if_not_hex(hex) {
+    }
+  
+    static fail_if_not_hex(hex) {
       if (hex.length != 2) {
-        throw new Error(`hex value must be 2 characters long, got ${hex}`)
+        throw new Error(`hex value must be 2 characters long, got ${hex}`);
       }
       if (hex.match(/[^0-9A-Fa-f]/)) {
-        throw new Error(`hex value must be 2 characters long, got ${hex}`)
+        throw new Error(`hex value must be 0-9 or A-F, got ${hex}`);
       }
     }
-  };
+}
 
-  export { DecimalToHex };
+
+  export { DecimalToHex, HexToDecimal};

@@ -1,5 +1,6 @@
 import {describe, expect, test} from '@jest/globals';
 import { DecimalToHex } from '../src/js/hex_dec_converters';
+import { HexToDecimal } from '../src/js/hex_dec_converters';
 
 
 describe('DecimalToHex', () => {
@@ -49,7 +50,7 @@ describe('DecimalToHex', () => {
 
   describe('fin', () => {
 
-    test.skip('output entire range of fin values', () => {
+    describe('output entire range of fin values', () => {
       for( let i=1; i >-1.1; i-=0.01 ){
         process.stdout.write(`DecimalToHex.pit(${i}): ${DecimalToHex.pit}`)
         i = i.toFixed(2);
@@ -98,14 +99,21 @@ describe('DecimalToHex', () => {
     });
   });
 
-  describe.skip('remainder', () => {
+  describe('remainder', () => {
     test('returns correct hex string for valid inputs', () => {
-      expect(DecimalToHex.remainder(0)).toEqual('00');
-      expect(DecimalToHex.remainder(1.5)).toEqual('FF');
-      expect(DecimalToHex.remainder(-1.5)).toEqual('00');
+    });
+    
+
+    test('returns same values as FIN,when PIT is 00', () => {
+      [0,0.15,-0.15,0.4,-0.4].forEach( (i) => {
+        expect(DecimalToHex.remainder(i)).toEqual(DecimalToHex.fin(i));
+      });
     });
 
     test('handles negative decimal values correctly', () => {
+      expect(DecimalToHex.remainder(-0.01)).toEqual('FF');
+      expect(DecimalToHex.remainder(-0.15)).toEqual('FE');
+
       expect(DecimalToHex.remainder(-2.5)).toEqual('7F');
       expect(DecimalToHex.remainder(-3.5)).toEqual('FE');
       expect(DecimalToHex.remainder(-4.5)).toEqual('FD');
@@ -125,4 +133,25 @@ describe('DecimalToHex', () => {
     });
 
 });
+});
+
+
+describe('HexToDecimal', () => {
+  describe('pit', () => {
+    test('returns correct PIT hex string for valid inputs', () => {
+      expect(HexToDecimal.pit('00')).toEqual(0);
+      expect(HexToDecimal.pit('FF')).toEqual(-1);
+      expect(HexToDecimal.pit('7F')).toEqual(127);
+      expect(HexToDecimal.pit('80')).toEqual(-128);
+      expect(HexToDecimal.pit('CF')).toEqual(-49);
+      expect(HexToDecimal.pit('40')).toEqual(64);
+    });
+
+    test('returns error message for invalid inputs', () => {
+      expect(HexToDecimal.pit(128)).toEqual(`Couldn't handle value: 128`);
+      expect(HexToDecimal.pit(-129)).toEqual(`Couldn't handle value: -129`);
+    });
+  });
+
+
 });
