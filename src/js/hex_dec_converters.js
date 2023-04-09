@@ -1,7 +1,14 @@
 
 class DecimalToHex {
     static round(v) {
-      return Math.sign(v) * Math.round(Math.abs(v));
+      //return Math.sign(v) * Math.round(Math.abs(v));
+      return Number(v.toFixed(0)) // rounds _away_ from zero
+    }
+
+    // 
+    static limitPrecision(v,precision=3) {
+      const factor = 10 ** precision;
+      return Math.trunc(v * 10000) / 10000;
     }
 
     static normal(decimal) {
@@ -9,6 +16,7 @@ class DecimalToHex {
     }
 
     static pit(decimal) {
+      decimal=DecimalToHex.limitPrecision(decimal)
       if (decimal > -0.5 && decimal <= 127) {
         return DecimalToHex.round(decimal).toString(16).padStart(2, '0').toUpperCase();
       } else if (decimal >= -128 && decimal <= -0.5) {
@@ -19,7 +27,7 @@ class DecimalToHex {
     }
 
     static fin(decimal) {
-      decimal=Number(decimal)
+      decimal=DecimalToHex.limitPrecision(Number(decimal))
       if (decimal >= 0 && decimal <= 1) {
         return DecimalToHex.round(decimal * 127).toString(16).padStart(2, '0').toUpperCase();;
       } else if (decimal >= -1 && decimal < 0) {
@@ -37,6 +45,7 @@ class DecimalToHex {
     }
 
     static detune(decimal) {
+      decimal=DecimalToHex.limitPrecision(decimal)
       let n = null;
       if (decimal >= 0 && decimal <= 8) {
         n = DecimalToHex.round(
@@ -51,13 +60,14 @@ class DecimalToHex {
       } else {
         return (`Couldn't handle value: ${decimal}`);
       }
-    }q
+    }
 
     static remainder(decimal) {
+      decimal=DecimalToHex.limitPrecision(decimal)
       const pitHex = DecimalToHex.pit(decimal);
       const pitDecimal = HexToDecimal.pit(pitHex);
-      let decimalDiff = decimal - pitDecimal;
-      console.log(`remainder 1: (decimal: ${decimal} pitHex: ${pitHex}  pitDecimal: ${pitDecimal}  decimal - pitDecimal: ${decimalDiff}   DecimalToHex.fin(${decimalDiff}): ${DecimalToHex.fin(decimalDiff)} `)
+      const decimalDiff = decimal - pitDecimal;
+      //console.log(`remainder 1: (decimal: ${decimal} pitHex: ${pitHex}  pitDecimal: ${pitDecimal}  decimal - pitDecimal: ${decimalDiff}   DecimalToHex.fin(${decimalDiff}): ${DecimalToHex.fin(decimalDiff)} `)
 
       return DecimalToHex.fin(decimalDiff);
     }
@@ -66,7 +76,8 @@ class DecimalToHex {
 
   class HexToDecimal {
     static round(v) {
-      return Math.sign(v) * Math.round(Math.abs(v));
+      //return Math.sign(v) * Math.round(Math.abs(v));
+      return Number(v.toFixed(0)) // rounds _away_ from zero
     }
 
     static normal(hex) {

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/web-manifest",
-  "short_name": "M8 BPMs->PIT",
+  "short_name": "M8 TPO🡺PIT",
   "name": "M8 Tempo Change Pitch Calculator",
   "description": "Calculates the pitch change between two BPMs, displayed as various Dirtywave M8 FX command values ",
   "background_color": "#EEE",

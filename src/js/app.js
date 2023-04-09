@@ -1,4 +1,4 @@
-import { DecimalToHex } from './hex_dec_converters.js';
+import { DecimalToHex, HexToDecimal } from './hex_dec_converters.js';
 
 export const bpm_to_pitch = (old_bpm, new_bpm) => Math.log2(new_bpm/old_bpm)*12
 
@@ -26,42 +26,66 @@ export function initApp() {
     function runWithinRange( fnnn, v, min, max, na_fn=(v)=>{'N/A'}) {
       return (v > max || v < min) ? 'N/A' : fnnn(v);
     }
+
+    function dec2fin(semitoneChange) {
+      return runWithinRange((DecimalToHex.fin), semitoneChange, -1, 1)
+    }
+
+    function updateBipolarBarGraphCss(input, fraction){
+      if( Math.abs(fraction) > 1 ){
+        fraction = Math.sign(fraction)
+      }
+
+      input.style.setProperty( '--bar-size', `${DecimalToHex.round(Math.abs(fraction) * 50)}%`);
+      if (fraction >= 0) {
+        input.style.setProperty( '--bar-direction', 'to top');
+      } else {
+        input.style.setProperty( '--bar-direction', 'to bottom');
+      }
+    }
   
     // if one of the inputs is blank, make it the same as the other
     // TODO: UX of this didn't turn out too great; see if there's a better way
     //   starting at 60, so it doesn't match after typing the `1` in `120`
     if ((fromBpmInput.value > 60) && (toBpmInput.value == '')) {
       toBpmInput.value = fromBpmInput.value;
-    } else if ((toBpmInput.value > 60) && (fromBpmInput == '')) {
+    } else if ((toBpmInput.value > 60) && (fromBpmInput.value == '')) {
       fromBpmInput.value = toBpmInput.value;
     };
     
     const semitoneChange = bpm_to_pitch(parseFloat(fromBpmInput.value), parseFloat(toBpmInput.value));
 
     // if the semitone change is less than 1, show 2 decimal places
-    const mantissaDigits = semitoneChange > -1 && semitoneChange < 1 ? 2 : 1 
+    let mantissaDigits = semitoneChange > -1 && semitoneChange < 1 ? 2 : 1 
+    mantissaDigits = semitoneChange > -0.1 && semitoneChange < 0.1 ? 3 : mantissaDigits
 
-
-    function dec2fin(semitoneChange) {
-      return runWithinRange((DecimalToHex.fin), semitoneChange, -1, 1)
-    }
-
-    semitoneDiffFull.value = semitoneChange // hidden input to keep full precision value
+    semitoneDiffFull.value = semitoneChange.toFixed(mantissaDigits) // hidden input to keep full precision value
     displayBox.value = semitoneChange.toFixed(mantissaDigits); // friendlier display value
     displayBoxDetuneHex.value = runWithinRange((DecimalToHex.detune), semitoneChange, -8, 8);
     displayBoxPitHex.value = DecimalToHex.pit(semitoneChange);
     displayBoxPitFinHex.value = DecimalToHex.remainder(semitoneChange);
     displayBoxFinHex.value = dec2fin(semitoneChange);
 
-    [displayBoxDetuneHex, displayBoxPitHex, displayBoxPitFinHex, displayBoxFinHex].forEach(function(el) {
+    const stc = semitoneChange ? semitoneChange : 0
+    //updateBipolarBarGraphCss(displayBoxPitHex, stc/127)
+    updateBipolarBarGraphCss(displayBoxPitFinHex, stc - HexToDecimal.pit(DecimalToHex.pit(stc)));
+    updateBipolarBarGraphCss(displayBoxFinHex, stc);
+    updateBipolarBarGraphCss(displayBoxDetuneHex, (stc/8));
+    
+    [
+      displayBoxDetuneHex, 
+      displayBoxPitHex, 
+      displayBoxPitFinHex, 
+      displayBoxFinHex
+    ].forEach(
+      function(el) {
       if( /^[0-9A-Fa-f.]+$/.test( el.value ) ) {
         el.classList.remove('invalid-value');
       } else {
         el.classList.add('invalid-value');
-      } 
+      }
     });
   }
-
   
   function makeInputDraggable(input){
     input.addEventListener('touchstart', function(event) {

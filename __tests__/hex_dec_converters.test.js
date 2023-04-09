@@ -51,11 +51,12 @@ describe('DecimalToHex', () => {
   describe('fin', () => {
 
     describe.skip('output entire range of fin values', () => {
-      for( let i=1; i >-1.1; i-=0.01 ){
-        process.stdout.write(`DecimalToHex.pit(${i}): ${DecimalToHex.pit}`)
+      /*
+      for( let i=1; i >-1.01; i-=0.01 ){
         i = i.toFixed(2);
         test.todo(`DecimalToHex.fin(${i}): ${DecimalToHex.fin(i)}`);
       }
+      */
     })
     test('returns correct hex string for valid inputs (0+)', () => {
       expect(DecimalToHex.fin(0)).toEqual('00');
