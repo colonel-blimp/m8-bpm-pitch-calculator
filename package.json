@@ -1,7 +1,7 @@
 {
   "name": "m8calc",
   "version": "1.0.0",
-  "description": "",
+  "description": "Calculates the pitch change between two BPMs, displayed as various Dirtywave M8 FX command values ",
   "exports": "./app.js",
   "author": "",
   "license": "ISC",
