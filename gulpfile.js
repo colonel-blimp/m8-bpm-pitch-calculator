@@ -65,7 +65,7 @@ gulp.task('jest', function(done) {
 });
 
 gulp.task('copy', function() {
-  return gulp.src('src/**/*.{webmanifest,json,png,jpg,gif,svg}')
+  return gulp.src('src/**/*.{webmanifest,json,png,jpg,gif,svg,woff2}')
     //.pipe(uglify())
     //.pipe(rename({suffix: '.min'}))
     .pipe(gulp.dest('dist'))
@@ -96,7 +96,7 @@ gulp.task('default', function() {
   gulp.watch('src/**/*.scss', gulp.series('scss'));
   gulp.watch('src/**/*.js', gulp.parallel('js','jest'));
   gulp.watch('__tests__/**/*.js', gulp.series('jest'));
-  gulp.watch('src/**/*.{webmanifest,json,png,jpg,gif,svg}', gulp.series('copy'));
+  gulp.watch('src/**/*.{webmanifest,json,png,jpg,gif,svg,woff2}', gulp.series('copy'));
 
   let process;
 
