@@ -50,11 +50,6 @@ gulp.task('js', function() {
     }))
 });
 
-gulp.task('moveFavicon', function() {
-  return gulp.src('src/assets/favicon.ico')
-    .pipe(gulp.dest('dist/'));
-});
-
 
 // Jest UT
 gulp.task('jest', function(done) {
@@ -70,7 +65,7 @@ gulp.task('jest', function(done) {
 });
 
 gulp.task('copy', function() {
-  return gulp.src('src/**/*.{webmanifest,json,favicon.ico,png,jpg,gif,svg}')
+  return gulp.src('src/**/*.{webmanifest,json,png,jpg,gif,svg}')
     //.pipe(uglify())
     //.pipe(rename({suffix: '.min'}))
     .pipe(gulp.dest('dist'))
@@ -80,13 +75,19 @@ gulp.task('copy', function() {
 });
 
 
-gulp.task('build', gulp.parallel('pug', 'scss', 'js', 'moveFavicon', 'copy'));
+gulp.task('build', gulp.parallel('pug', 'scss', 'js', 'copy'));
 
 gulp.task('default', function() {
+  gulp.parallel('pug', 'scss', 'js', 'copy')
+
   browserSync.init({
     //https: true,
     server: {
        baseDir: './dist',
+       routes: {
+          "/m8-bpm-pitch-calculator": "dist"
+       }
+       //"directory": true
        //https: true,
     },
   });
@@ -95,9 +96,8 @@ gulp.task('default', function() {
   gulp.watch('src/**/*.scss', gulp.series('scss'));
   gulp.watch('src/**/*.js', gulp.parallel('js','jest'));
   gulp.watch('__tests__/**/*.js', gulp.series('jest'));
-  gulp.watch('src/**/*.json', gulp.series('copy'));
+  gulp.watch('src/**/*.{webmanifest,json,png,jpg,gif,svg}', gulp.series('copy'));
 
-  gulp.watch('src/assets/favicon.ico', gulp.series('moveFavicon'));
   let process;
 
   const restart = () => {

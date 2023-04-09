@@ -6,6 +6,7 @@ self.addEventListener('install', function(event) {
         return cache.addAll([
           `${BASE_URL}/`,
           `${BASE_URL}/index.html`,
+          `${BASE_URL}/img/tpo2pit.png`,
           `${BASE_URL}/styles/styles.css`,
           `${BASE_URL}/js/app.js`,
           `${BASE_URL}/js/hex_dec_converters.js`,
