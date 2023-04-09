@@ -1,3 +1,5 @@
+- var base_url = '/m8-bpm-pitch-calculator'
+
 mixin bpm_number_input(label,value)
   input(type='number' min=0 max=999 value=`${value}` id=`${label}` inputmode='numeric')
 
@@ -8,7 +10,7 @@ html
     meta(charset='UTF-8')
     title M8 Tempo Change Pitch Calculator
     link(rel='stylesheet' href='styles/styles.css')
-    link(rel="manifest" href="/manifest.webmanifest")
+    link(rel="manifest" href=`${base_url}/manifest.webmanifest`)
     meta(name="apple-mobile-web-app-capable" content="yes")
     meta(name="mobile-web-app-capable" content="yes")
 
@@ -47,7 +49,7 @@ html
     script.
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
-          navigator.serviceWorker.register('service-worker.js', {scope: '/m8-bpm-pitch-calculator/'}).then(function(registration) {
+          navigator.serviceWorker.register('#{base_url}/service-worker.js', {scope: '#{base_url}/'}).then(function(registration) {
             // Registration was successful
             console.log('ServiceWorker registration successful with scope: ', registration.scope);
           }, function(err) {
