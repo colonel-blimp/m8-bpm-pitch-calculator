@@ -9,7 +9,7 @@ self.addEventListener('install', function(event) {
           `${BASE_URL}/styles/styles.css`,
           `${BASE_URL}/js/app.js`,
           `${BASE_URL}/js/hex_dec_converters.js`,
-          `${BASE_URL}/js/service-worker.js`
+          `${BASE_URL}/service-worker.js`
         ]);
       })
     );
