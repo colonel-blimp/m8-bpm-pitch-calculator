@@ -70,7 +70,7 @@ gulp.task('jest', function(done) {
 });
 
 gulp.task('copy', function() {
-  return gulp.src('src/**/*.json')
+  return gulp.src('src/**/*.{webmanifest,json,favicon.ico,png,jpg,gif,svg}')
     //.pipe(uglify())
     //.pipe(rename({suffix: '.min'}))
     .pipe(gulp.dest('dist'))
@@ -80,7 +80,7 @@ gulp.task('copy', function() {
 });
 
 
-gulp.task('build', gulp.parallel('pug', 'scss', 'js', 'moveFavicon'));
+gulp.task('build', gulp.parallel('pug', 'scss', 'js', 'moveFavicon', 'copy'));
 
 gulp.task('default', function() {
   browserSync.init({
