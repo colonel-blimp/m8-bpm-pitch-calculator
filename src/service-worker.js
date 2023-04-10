@@ -1,5 +1,5 @@
 const BASE_URL = '/m8-bpm-pitch-calculator';
-const CACHE_VERSION = '0.2.3';
+const CACHE_VERSION = '0.3.0';
 const CURRENT_CACHES = {
   m8calc: `m8-bpm-pit-calc--v${CACHE_VERSION}`,
 };
@@ -20,7 +20,7 @@ self.addEventListener('install', function(event) {
       })
     );
   });
-  
+
 self.addEventListener('fetch', function(event) {
   event.respondWith(
     caches.match(event.request).then(function(response) {
