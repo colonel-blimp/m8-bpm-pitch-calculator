@@ -19,8 +19,8 @@ html
 
   body
     header
-      hgroup 
-        h1 TPO2PIT 
+      hgroup
+        h1 TPO2PIT
         h2 M8 Tempo Pitch Change Calculator
     main
       //p This tool calculates the pitch change in semitones, PIT, PIT+FIN, Detune and FIN when changing the tempo of a song.
@@ -38,20 +38,20 @@ html
             input(id='display-box' readonly=true)
             input(id='semitones-full-fraction' hidden=true )
 
-          fieldset 
+          fieldset
             .number-box(class=['bipolar-fixed-number-range'])
               label(for='display-box-pit-hex') PIT
               input(id='display-box-pit-hex' readonly=true)
             .number-box(class=['bipolar-fixed-number-range'])
               label(for='display-box-pit-fin-hex') (PIT+) FIN
-              input(id='display-box-pit-fin-hex' readonly=true)          
+              input(id='display-box-pit-fin-hex' readonly=true)
 
           .number-box(class=['bipolar-fixed-number-range'])
             label(for='display-box-detune-hex') Detune
             input(id='display-box-detune-hex' readonly=true)
           .number-box(class=['bipolar-fixed-number-range'])
             label(for='display-box-fin-hex') FIN
-            input(id='display-box-fin-hex' readonly=true)                
+            input(id='display-box-fin-hex' readonly=true)
     script(src='js/app.js' type='module')
     script.
       if ('serviceWorker' in navigator) {
