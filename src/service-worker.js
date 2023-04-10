@@ -1,5 +1,5 @@
 const BASE_URL = '/m8-bpm-pitch-calculator';
-const CACHE_VERSION = '0.3.0';
+const CACHE_VERSION = '0.3.1';
 const CURRENT_CACHES = {
   m8calc: `m8-bpm-pit-calc--v${CACHE_VERSION}`,
 };
